@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+#MISE description="Run linters"
+
+markdownlint-cli2 '**/*.md'

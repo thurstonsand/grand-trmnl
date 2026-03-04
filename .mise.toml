@@ -1,0 +1,6 @@
+[tools]
+ruby = "3.4.8"
+"npm:markdownlint-cli2" = "latest"
+
+[settings]
+ruby.compile = false

@@ -1,0 +1,15 @@
+---
+watch:
+  - .trmnlp.yml
+  - src
+
+polling_url: http://localhost:8888/parcel_response.json
+
+custom_fields:
+  api_key: "{{ env.PARCEL_API_KEY }}"
+  filter_mode: recent
+
+variables:
+  trmnl:
+    user:
+      time_zone: America/New_York
