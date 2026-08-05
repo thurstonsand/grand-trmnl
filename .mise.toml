@@ -1,6 +1,12 @@
 [tools]
-ruby = "3.4.8"
-"npm:markdownlint-cli2" = "latest"
+# trmnl_preview 0.10.x depends on trmnl-liquid 0.7, which requires Ruby >= 4.0
+ruby = "4.0.6"
+python = "3.14.6"
+"gem:trmnl_preview" = "0.10.0"
+"npm:markdownlint-cli2" = "0.23.2"
+"npm:renovate" = { version = "44.11.4", trust_policy_excludes = [
+  "@yarnpkg/libzip@3.2.2",
+] }
 
 [settings]
 ruby.compile = false

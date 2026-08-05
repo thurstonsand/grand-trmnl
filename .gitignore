@@ -1,3 +1,9 @@
 /references
 **/.env
 **/.env.*
+
+# build artifacts
+_build
+
+# subagent working files
+.agents/scratch/

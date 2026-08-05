@@ -1,1 +1,263 @@
+{% comment %} ── Canonical partition: shared across all views ── {% endcomment %}
+{% assign today_date = 0 | days_ago: trmnl.user.time_zone | date: "%Y-%m-%d" %}
+{% assign today_epoch = today_date | date: "%s" | plus: 0 %}
+{% assign today_indices = "" %}
+{% assign upcoming_dated_tokens = "" %}
+{% assign upcoming_dateless_indices = "" %}
+{% assign attention7_indices = "" %}
+{% assign attention6_indices = "" %}
+{% assign delivered_indices = "" %}
 
+{% for d in deliveries %}
+  {% assign idx_string = forloop.index0 | append: "" %}
+  {% if d.status_code == 0 %}
+    {% if delivered_indices != "" %}{% assign delivered_indices = delivered_indices | append: "," %}{% endif %}
+    {% assign delivered_indices = delivered_indices | append: idx_string %}
+  {% else %}
+    {% assign date_expected = d.date_expected | default: "" | strip %}
+    {% assign expected_date = "" %}
+    {% if date_expected != blank %}{% assign expected_date = date_expected | slice: 0, 10 %}{% endif %}
+    {% assign is_today = false %}
+    {% if d.status_code == 4 or d.status_code == 3 or expected_date == today_date %}
+      {% assign is_today = true %}
+    {% endif %}
+
+    {% if is_today %}
+      {% if today_indices != "" %}{% assign today_indices = today_indices | append: "," %}{% endif %}
+      {% assign today_indices = today_indices | append: idx_string %}
+    {% else %}
+      {% if d.status_code == 7 %}
+        {% if attention7_indices != "" %}{% assign attention7_indices = attention7_indices | append: "," %}{% endif %}
+        {% assign attention7_indices = attention7_indices | append: idx_string %}
+      {% elsif d.status_code == 6 %}
+        {% if attention6_indices != "" %}{% assign attention6_indices = attention6_indices | append: "," %}{% endif %}
+        {% assign attention6_indices = attention6_indices | append: idx_string %}
+      {% endif %}
+
+      {% if date_expected != blank %}
+        {% assign padded_idx = "0000000000" | append: idx_string | slice: -10, 10 %}
+        {% assign sort_token = date_expected | append: "~" | append: padded_idx %}
+        {% if upcoming_dated_tokens != "" %}{% assign upcoming_dated_tokens = upcoming_dated_tokens | append: "," %}{% endif %}
+        {% assign upcoming_dated_tokens = upcoming_dated_tokens | append: sort_token %}
+      {% else %}
+        {% if upcoming_dateless_indices != "" %}{% assign upcoming_dateless_indices = upcoming_dateless_indices | append: "," %}{% endif %}
+        {% assign upcoming_dateless_indices = upcoming_dateless_indices | append: idx_string %}
+      {% endif %}
+    {% endif %}
+  {% endif %}
+{% endfor %}
+
+{% assign upcoming_indices = "" %}
+{% if upcoming_dated_tokens != "" %}
+  {% assign upcoming_dated_tokens_arr = upcoming_dated_tokens | split: "," | sort %}
+  {% for token in upcoming_dated_tokens_arr %}
+    {% assign token_parts = token | split: "~" %}
+    {% assign sorted_idx = token_parts | last | plus: 0 | append: "" %}
+    {% if upcoming_indices != "" %}{% assign upcoming_indices = upcoming_indices | append: "," %}{% endif %}
+    {% assign upcoming_indices = upcoming_indices | append: sorted_idx %}
+  {% endfor %}
+{% endif %}
+{% if upcoming_dateless_indices != "" %}
+  {% if upcoming_indices != "" %}{% assign upcoming_indices = upcoming_indices | append: "," %}{% endif %}
+  {% assign upcoming_indices = upcoming_indices | append: upcoming_dateless_indices %}
+{% endif %}
+{% assign today_indices_arr = today_indices | split: "," %}
+{% assign upcoming_membership_indices_arr = upcoming_indices | split: "," %}
+
+{% assign hero_idx = -1 %}
+{% if today_indices_arr.size == 1 %}
+  {% assign hero_idx = today_indices_arr[0] | plus: 0 %}
+  {% assign today_indices = "" %}
+{% elsif today_indices_arr.size == 0 and upcoming_membership_indices_arr.size > 0 %}
+  {% if attention7_indices != "" %}
+    {% assign attention7_indices_arr = attention7_indices | split: "," %}
+    {% assign hero_idx = attention7_indices_arr[0] | plus: 0 %}
+  {% elsif attention6_indices != "" %}
+    {% assign attention6_indices_arr = attention6_indices | split: "," %}
+    {% assign hero_idx = attention6_indices_arr[0] | plus: 0 %}
+  {% else %}
+    {% assign hero_idx = upcoming_membership_indices_arr[0] | plus: 0 %}
+  {% endif %}
+{% endif %}
+
+{% assign final_upcoming_indices = "" %}
+{% for idx_str in upcoming_membership_indices_arr %}
+  {% assign candidate_idx = idx_str | plus: 0 %}
+  {% if candidate_idx != hero_idx %}
+    {% if final_upcoming_indices != "" %}{% assign final_upcoming_indices = final_upcoming_indices | append: "," %}{% endif %}
+    {% assign final_upcoming_indices = final_upcoming_indices | append: idx_str %}
+  {% endif %}
+{% endfor %}
+{% assign upcoming_indices = final_upcoming_indices %}
+{% assign today_indices_arr = today_indices | split: "," %}
+{% assign upcoming_indices_arr = upcoming_indices | split: "," %}
+{% assign delivered_indices_arr = delivered_indices | split: "," %}
+
+{% assign all_arrived = false %}
+{% if deliveries.size > 0 and delivered_indices_arr.size == deliveries.size %}{% assign all_arrived = true %}{% endif %}
+{% assign hero = nil %}
+{% if hero_idx >= 0 %}{% assign hero = deliveries[hero_idx] %}{% endif %}
+
+{% assign hero_days = nil %}
+{% assign hero_late = false %}
+{% assign hero_date_expected = hero.date_expected | default: "" | strip %}
+{% if hero and hero_date_expected != blank and hero.status_code != 0 %}
+  {% assign hero_expected_date = hero_date_expected | slice: 0, 10 %}
+  {% if hero_expected_date < today_date %}
+    {% assign hero_late = true %}
+  {% else %}
+    {% assign hero_expected_epoch = hero_expected_date | date: "%s" | plus: 0 %}
+    {% assign hero_diff = hero_expected_epoch | minus: today_epoch | plus: 43200 %}
+    {% assign hero_days = hero_diff | divided_by: 86400 %}
+  {% endif %}
+{% endif %}
+
+{% comment %} ── Templates ── {% endcomment %}
+{% template error_state %}
+  <div class="layout layout--center">
+    <span class="{{ title_class }}">{{ error_message | default: "Unable to reach Parcel" }}</span>
+  </div>
+{% endtemplate %}
+
+{% template empty_state %}
+  <div class="layout layout--center">
+    <div class="flex flex--col flex--center-x gap--xsmall text--center">
+      <div class="{{ title_class }}">Nothing incoming.</div>
+      <div class="description lg:description--large">Enjoy the quiet.</div>
+    </div>
+  </div>
+{% endtemplate %}
+
+{% template status_label %}
+  {% case status_code %}
+    {% when 0 %}Arrived ✓
+    {% when 1 %}Frozen
+    {% when 2 %}On its way
+    {% when 3 %}Ready for pickup
+    {% when 4 %}Arriving today
+    {% when 5 %}MIA
+    {% when 6 %}Missed delivery
+    {% when 7 %}Needs attention
+    {% when 8 %}Label created
+  {% endcase %}
+{% endtemplate %}
+
+{% template status_label_short %}
+  {% case status_code %}
+    {% when 0 %}Arrived
+    {% when 1 %}Frozen
+    {% when 2 %}On its way
+    {% when 3 %}Pickup
+    {% when 4 %}Today
+    {% when 5 %}MIA
+    {% when 6 %}Missed
+    {% when 7 %}Attention
+    {% when 8 %}Label created
+  {% endcase %}
+{% endtemplate %}
+
+{% template days_badge %}
+  {% if late %}
+    <div class="flex flex--row flex--start flex--center-y gap--xsmall {{ wrapper_class }}">
+      <span class="label label--large lg:label--xlarge label--inverted">Late</span>
+    </div>
+  {% elsif days and days >= 1 %}
+    <div class="flex flex--row flex--start flex--center-y gap--xsmall {{ wrapper_class }}">
+      <span class="{{ value_class }}">{{ days }}</span>
+      <span class="label label--small lg:label--large">{% if days == 1 %}day{% else %}days{% endif %}</span>
+    </div>
+  {% endif %}
+{% endtemplate %}
+
+{% template manifest_row %}
+  {% assign d_days = nil %}
+  {% assign is_late = false %}
+  {% assign d_date_expected = d.date_expected | default: "" | strip %}
+  {% if d_date_expected != blank and d.status_code != 0 %}
+    {% assign d_expected_date = d_date_expected | slice: 0, 10 %}
+    {% if d_expected_date < today_date %}
+      {% assign is_late = true %}
+    {% else %}
+      {% assign d_expected_epoch = d_expected_date | date: "%s" | plus: 0 %}
+      {% assign d_diff = d_expected_epoch | minus: today_epoch | plus: 43200 %}
+      {% assign d_days = d_diff | divided_by: 86400 %}
+    {% endif %}
+  {% endif %}
+  {% assign is_attention = false %}
+  {% if d.status_code == 7 or d.status_code == 6 %}{% assign is_attention = true %}{% endif %}
+
+  <div class="item self--start py--1 border--h-black {{ row_class }}">
+    <div class="content">
+      <span class="title title--small lg:title--base {% if is_attention %}font--bold{% endif %} {% if d.status_code == 0 %}text--gray-30 4bit:text--gray-50{% endif %}">
+        {% if is_late %}
+          <span class="label label--small label--inverted">Late</span>
+        {% elsif hide_indicator %}
+        {% elsif d.status_code == 0 %}
+          <span class="font--bold text--gray-30 4bit:text--gray-50">✓</span>
+        {% elsif d_days != nil %}
+          <span class="font--bold">{{ d_days }}</span>
+        {% else %}
+          <span class="font--bold">!</span>
+        {% endif %}
+        {{ d.description }}
+      </span>
+      {% if show_status %}
+        <span class="description lg:description--large {% if is_attention %}font--bold{% endif %} {% if d.status_code == 0 %}text--gray-30 4bit:text--gray-50{% endif %}">
+          {% render "status_label_short", status_code: d.status_code %}
+          · {{ d.carrier_code | upcase }}
+          {% if show_location and d.events.size > 0 and d.events[0].location %}· {{ d.events[0].location }}{% endif %}
+        </span>
+      {% endif %}
+      {% if show_latest_event and d.events.size > 0 %}
+        <span class="hidden lg:block description lg:description--base text--gray-30 4bit:text--gray-50">
+          {{ d.events[0].event }}{% if d.events[0].location %} · {{ d.events[0].location }}{% endif %}
+        </span>
+      {% endif %}
+    </div>
+  </div>
+{% endtemplate %}
+
+{% template manifest_counter %}
+  <div class="item self--start py--1 border--h-black {{ counter_class }}">
+    <div class="content">
+      <span class="title title--small lg:title--base">and {{ count }} more</span>
+    </div>
+  </div>
+{% endtemplate %}
+
+{% template hero_slot %}
+  <div class="flex flex--col flex--stretch-x gap--xsmall {{ slot_class }}">
+    {% if all_arrived %}
+      <div class="label {{ label_class }}">All arrived ✓</div>
+      <div class="{{ name_class }}">{{ delivered_count }} delivered</div>
+      {% if show_all_arrived_detail %}<div class="{{ detail_class }}">Everything made it.</div>{% endif %}
+    {% elsif today_indices_arr.size > 1 %}
+      <div class="label {{ label_class }}">Arriving today</div>
+      <div class="mt--1">
+        {% for idx_str in today_indices_arr limit: today_cap %}
+          {% assign idx = idx_str | plus: 0 %}
+          {% assign d = deliveries[idx] %}
+          {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: today_show_status, show_location: today_show_location, show_latest_event: true, hide_indicator: true %}
+        {% endfor %}
+        {% if today_indices_arr.size > today_cap %}
+          {% assign today_hidden_count = today_indices_arr.size | minus: today_cap %}
+          {% render "manifest_counter", count: today_hidden_count %}
+        {% endif %}
+      </div>
+    {% elsif hero_idx >= 0 %}
+      <div class="label {{ label_class }}">
+        {% render "status_label", status_code: hero.status_code %}
+      </div>
+      {% render "days_badge", days: hero_days, late: hero_late, value_class: days_value_class, wrapper_class: "my--1" %}
+      <div class="{{ name_class }}">{{ hero.description }}</div>
+      <div class="{{ detail_class }}">
+        {% if hero_date_expected != blank %}{{ hero_date_expected | date: date_format }} · {% endif %}{{ hero.carrier_code | upcase }}{% if show_hero_location and hero.events.size > 0 and hero.events[0].location %} · {{ hero.events[0].location }}{% endif %}
+      </div>
+      {% if hero.events.size > 0 %}
+        <div class="{{ event_class }}">
+          {{ hero.events[0].event }}{% if hero.events[0].location %} · {{ hero.events[0].location }}{% endif %}
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endtemplate %}

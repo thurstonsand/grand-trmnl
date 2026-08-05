@@ -1,19 +1,22 @@
 ---
-name: Parcel
 strategy: polling
-refresh_interval: 60
-polling_verb: get
-polling_url: "https://api.parcel.app/external/deliveries/?filter_mode=##{{ filter_mode }}"
-polling_headers: "api-key=##{{ api_key }}"
 no_screen_padding: 'no'
 dark_mode: 'no'
+static_data: 
+polling_verb: get
+polling_url: https://api.parcel.app/external/deliveries/?filter_mode={{ filter_mode }}
+polling_headers: api-key={{ api_key }}
+polling_body: 
+id: 257488
 custom_fields:
-  - keyname: api_key
-    name: Parcel API Key
-    field_type: text
-  - keyname: filter_mode
-    name: Filter Mode
-    field_type: select
-    options:
-      - recent
-      - active
+- keyname: api_key
+  name: Parcel API Key
+  field_type: password
+- keyname: filter_mode
+  name: Filter Mode
+  field_type: select
+  options:
+  - recent
+  - active
+name: Parcel
+refresh_interval: 60
