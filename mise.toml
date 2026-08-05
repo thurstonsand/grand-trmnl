@@ -1,0 +1,37 @@
+min_version = "2026.7.4"
+
+[settings]
+ruby.compile = false
+
+[hooks]
+# Entering the repo reconciles everything: running a task hydrates every tool in
+# [tools], even when the task body is cached, and bootstrap installs the git hooks.
+enter = "mise bootstrap --yes --quiet"
+
+[tools]
+# trmnl_preview 0.10.x depends on trmnl-liquid 0.7, which requires Ruby >= 4.0
+ruby = "4.0.6"
+python = "3.14.6"
+hk = "1.54.0"
+"gem:trmnl_preview" = "0.10.0"
+"npm:markdownlint-cli2" = "0.23.2"
+"npm:renovate" = { version = "44.11.4", trust_policy_excludes = [
+  "@yarnpkg/libzip@3.2.2",
+] }
+
+[env]
+HK_MISE = "1"
+
+[tasks.bootstrap]
+description = "Install git hooks"
+run = [
+    "hk install --mise --quiet",
+    "mkdir -p .mise && touch .mise/bootstrap",
+]
+sources = ["mise.toml", "hk.pkl"]
+outputs = [".mise/bootstrap"]
+quiet = true
+
+[tasks.lint]
+description = "Lint Markdown"
+run = "markdownlint-cli2 '**/*.md'"

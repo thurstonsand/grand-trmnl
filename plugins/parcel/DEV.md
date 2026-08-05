@@ -2,7 +2,7 @@
 
 ## Environment
 
-This plugin lives at `plugins/parcel/` in the grand-trmnl monorepo; paths below are relative to this directory unless noted. All tooling is pinned in the repo-root `.mise.toml` (Ruby, Python, trmnlp via the gem backend, markdownlint, renovate); `mise install` sets up everything repo-local. System-level dependencies that mise cannot manage (Firefox as trmnlp's headless render backend, ImageMagick) live in the ansiblonomicon Brewfile.
+This plugin lives at `plugins/parcel/` in the grand-trmnl monorepo; paths below are relative to this directory unless noted. All tooling is pinned in the repo-root `mise.toml` (Ruby, Python, trmnlp via the gem backend, markdownlint, renovate); `mise trust` once, then entering the directory sets up everything repo-local. System-level dependencies that mise cannot manage (Firefox as trmnlp's headless render backend, ImageMagick) live in the ansiblonomicon Brewfile.
 
 ## Project Structure
 

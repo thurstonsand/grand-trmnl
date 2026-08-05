@@ -2,12 +2,34 @@
 strategy: polling
 no_screen_padding: 'no'
 dark_mode: 'no'
-static_data: 
+static_data:
 polling_verb: get
+framework_version: 2.3.7
+serverless_language:
 polling_url: https://api.parcel.app/external/deliveries/?filter_mode={{ filter_mode }}
 polling_headers: api-key={{ api_key }}
-polling_body: 
+polling_body:
 id: 257488
+oauth_enabled: 'false'
+oauth_pkce_enabled: 'no'
+oauth_authorize_url: ''
+oauth_token_url: ''
+oauth_scopes: ''
+oauth_scope_separator: ''
+oauth_refresh_url: ''
+oauth_auth_params: ''
+oauth_token_headers: ''
+oauth_token_site: ''
+oauth_token_params: ''
+oauth_token_request_auth_method: ''
+oauth_body_format: ''
+oauth_token_response_metadata: ''
+oauth_authorization_method: ''
+oauth_refresh_params: ''
+oauth_token_field_name: ''
+oauth_expiry_field_name: ''
+oauth_expiry_strategy: ''
+oauth_fixed_expiry_ms: ''
 custom_fields:
 - keyname: api_key
   name: Parcel API Key
@@ -19,4 +41,5 @@ custom_fields:
   - recent
   - active
 name: Parcel
+description:
 refresh_interval: 60
