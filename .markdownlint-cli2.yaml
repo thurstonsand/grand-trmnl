@@ -5,5 +5,5 @@ globs:
 ignores:
   - "**/node_modules/**"
   - "**/.git/**"
-  - "CLAUDE.md"
+  - "**/CLAUDE.md"
   - ".agents/scratch/**"

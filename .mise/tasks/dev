@@ -1,12 +1,23 @@
 #!/usr/bin/env bash
-#MISE description="Start local JSON server and trmnlp preview"
+#MISE description="Start local JSON server and trmnlp preview for a plugin"
+#USAGE arg "[plugin]" help="Plugin directory name under plugins/" default="parcel"
+
+set -euo pipefail
+
+PLUGIN="${usage_plugin:-${1:-parcel}}"
+PLUGIN_DIR="plugins/$PLUGIN"
+
+if [ ! -d "$PLUGIN_DIR/src" ]; then
+  echo "unknown plugin: $PLUGIN (no $PLUGIN_DIR/src)" >&2
+  exit 1
+fi
 
 cleanup() {
-  if [ -n "$JSON_PID" ]; then
+  if [ -n "${JSON_PID:-}" ]; then
     kill "$JSON_PID" 2>/dev/null
     wait "$JSON_PID" 2>/dev/null
   fi
-  if [ -n "$TRMNLP_PID" ]; then
+  if [ -n "${TRMNLP_PID:-}" ]; then
     kill "$TRMNLP_PID" 2>/dev/null
     wait "$TRMNLP_PID" 2>/dev/null
   fi
@@ -14,10 +25,10 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-python3 -m http.server 8888 --directory references &
+python3 -m http.server 8888 --directory "$PLUGIN_DIR/references" &
 JSON_PID=$!
 
-trmnlp serve &
+trmnlp serve -d "$PLUGIN_DIR" &
 TRMNLP_PID=$!
 
 echo "JSON server: http://localhost:8888"

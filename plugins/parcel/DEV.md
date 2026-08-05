@@ -2,7 +2,7 @@
 
 ## Environment
 
-All tooling is pinned in `.mise.toml` (Ruby, Python, trmnlp via the gem backend, markdownlint, renovate); `mise install` sets up everything repo-local. System-level dependencies that mise cannot manage (Firefox as trmnlp's headless render backend, ImageMagick) live in the ansiblonomicon Brewfile.
+This plugin lives at `plugins/parcel/` in the grand-trmnl monorepo; paths below are relative to this directory unless noted. All tooling is pinned in the repo-root `.mise.toml` (Ruby, Python, trmnlp via the gem backend, markdownlint, renovate); `mise install` sets up everything repo-local. System-level dependencies that mise cannot manage (Firefox as trmnlp's headless render backend, ImageMagick) live in the ansiblonomicon Brewfile.
 
 ## Project Structure
 
@@ -23,7 +23,7 @@ docs/designs/            # Design docs (numbered, historical artifacts)
 ## Local Preview
 
 ```sh
-mise run dev
+mise run dev parcel   # from repo root; parcel is the default
 ```
 
 Starts two processes:
@@ -57,8 +57,8 @@ Swap `full` for any view name. Always judge layouts from PNG renders, not the HT
 ## Deploying
 
 ```sh
-trmnlp login   # one-time auth
-trmnlp push    # upload to TRMNL server (--force to skip confirmation)
+trmnlp login                    # one-time auth
+trmnlp push -d plugins/parcel   # from repo root (--force to skip confirmation)
 ```
 
 `src/settings.yml` must keep its `id:` — without it, push creates a new plugin instead of updating.

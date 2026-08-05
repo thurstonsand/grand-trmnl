@@ -1,15 +1,22 @@
 # AGENTS.md
 
-A TRMNL plugin that renders Parcel package-tracking data on e-paper displays. The display's one job is delivery anticipation: what's arriving, and when, readable in a glance.
+A monorepo of TRMNL e-paper plugins. Every screen departs from here.
 
-## Project context
+## Structure
 
-See @CONTEXT.md for domain terminology.
+Each plugin lives in `plugins/<name>/` as a self-contained trmnlp project: `src/` (templates + settings.yml), `.trmnlp.yml`, its own `AGENTS.md`, `CONTEXT.md`, `PRODUCT.md`, `DEV.md`, and `docs/designs/`. Read the plugin's own docs before working on it.
 
-See @PRODUCT.md for a design brief.
+Shared at the root: mise env pins (`.mise.toml`), renovate config, markdownlint, and the `trmnl-development` skill (`.agents/skills/`) — TRMNL platform knowledge, framework reference, and hard-won gotchas that apply to every plugin.
 
-## Development
+## Working here
 
-See @DEV.md for development instructions.
+- `mise run dev [plugin]` — local preview (defaults to `parcel`)
+- `mise run lint` — markdownlint across the repo
+- `trmnlp push -d plugins/<name>` — deploy one plugin (only with explicit approval; `settings.yml` must keep its `id:`)
+- Judge every layout change from device-accurate PNG renders, never the HTML preview alone; each plugin's DEV.md carries the render recipes.
 
-Judge every layout change from rendered PNGs at the target devices (OG 1-bit, TRMNL X 4-bit), never from the HTML preview alone.
+## Plugins
+
+| Plugin | Purpose |
+| --- | --- |
+| `parcel` | Parcel package tracking — delivery anticipation at a glance |
