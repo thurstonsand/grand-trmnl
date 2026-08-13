@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+mise_bin="$HOME/.local/bin/mise"
+
+if [[ ! -x "$mise_bin" ]]; then
+  echo "mise is missing; rerun .agents/setup" >&2
+  exit 1
+fi
+
+"$mise_bin" trust --yes "$repo_root/mise.toml" >/dev/null
+"$mise_bin" run --cd "$repo_root" bootstrap
+
+echo "Orb environment ready"

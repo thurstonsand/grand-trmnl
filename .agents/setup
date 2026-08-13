@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+mise_bin="$HOME/.local/bin/mise"
+
+step() {
+  local label="$1"
+  shift
+  echo "==> $label"
+  time "$@"
+}
+
+packages=()
+command -v curl >/dev/null 2>&1 || packages+=(curl ca-certificates)
+command -v firefox >/dev/null 2>&1 || command -v firefox-esr >/dev/null 2>&1 || packages+=(firefox-esr)
+command -v magick >/dev/null 2>&1 || command -v convert >/dev/null 2>&1 || packages+=(imagemagick)
+
+if ((${#packages[@]})); then
+  step "Refresh apt metadata" sudo apt-get update
+  step "Install system packages: ${packages[*]}" \
+    sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends "${packages[@]}"
+else
+  echo "==> System packages already installed"
+fi
+
+if [[ ! -x "$mise_bin" ]]; then
+  echo "==> Install mise"
+  curl -fsSL https://mise.run | MISE_INSTALL_PATH="$mise_bin" sh
+else
+  echo "==> mise already installed"
+fi
+
+profile_marker="# grand-trmnl mise activation"
+touch "$HOME/.bash_profile"
+if ! grep -Fqx "$profile_marker" "$HOME/.bash_profile"; then
+  cat >>"$HOME/.bash_profile" <<'EOF'
+
+# grand-trmnl mise activation
+if [[ -x "$HOME/.local/bin/mise" ]]; then
+  eval "$("$HOME/.local/bin/mise" activate bash)"
+fi
+EOF
+fi
+
+step "Trust repository configuration" "$mise_bin" trust --yes "$repo_root/mise.toml"
+step "Install pinned development tools" "$mise_bin" install --cd "$repo_root"
+step "Install repository hooks" "$mise_bin" run --cd "$repo_root" bootstrap
+
+echo "==> Orb setup complete"
