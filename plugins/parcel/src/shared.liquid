@@ -186,7 +186,7 @@
   {% assign is_attention = false %}
   {% if d.status_code == 7 or d.status_code == 6 %}{% assign is_attention = true %}{% endif %}
 
-  <div class="item self--start pt--1 pb--3 border--h-black {{ row_class }}">
+  <div class="item self--start pt--2 pb--3 border--h-black {{ row_class }}">
     <div class="content">
       <span class="title title--small lg:title--base {% if is_attention %}font--bold{% endif %} {% if d.status_code == 0 %}text--gray-25 4bit:text--gray-50{% endif %}">
         {% if is_late %}
@@ -217,14 +217,6 @@
   </div>
 {% endtemplate %}
 
-{% template manifest_counter %}
-  <div class="item self--start pt--1 pb--3 border--h-black {{ counter_class }}">
-    <div class="content">
-      <span class="title title--small lg:title--base">and {{ count }} more</span>
-    </div>
-  </div>
-{% endtemplate %}
-
 {% template hero_slot %}
   <div class="flex flex--col flex--stretch-x gap--xsmall {{ slot_class }}">
     {% if all_arrived %}
@@ -233,16 +225,14 @@
       {% if show_all_arrived_detail %}<div class="{{ detail_class }}">Everything made it.</div>{% endif %}
     {% elsif today_indices_arr.size > 1 %}
       <div class="label {{ label_class }}">Arriving today</div>
-      <div class="mt--1">
-        {% for idx_str in today_indices_arr limit: today_cap %}
-          {% assign idx = idx_str | plus: 0 %}
-          {% assign d = deliveries[idx] %}
-          {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: today_show_status, show_location: today_show_location, show_latest_event: true, hide_indicator: true %}
-        {% endfor %}
-        {% if today_indices_arr.size > today_cap %}
-          {% assign today_hidden_count = today_indices_arr.size | minus: today_cap %}
-          {% render "manifest_counter", count: today_hidden_count %}
-        {% endif %}
+      <div class="columns mt--1" data-overflow-cols="1" data-overflow-counter="true">
+        <div class="column flex--col flex--start">
+          {% for idx_str in today_indices_arr %}
+            {% assign idx = idx_str | plus: 0 %}
+            {% assign d = deliveries[idx] %}
+            {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: today_show_status, show_location: today_show_location, show_latest_event: true, hide_indicator: true %}
+          {% endfor %}
+        </div>
       </div>
     {% elsif hero_idx >= 0 %}
       <div class="label {{ label_class }}">
