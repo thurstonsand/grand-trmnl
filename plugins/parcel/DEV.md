@@ -37,19 +37,19 @@ Scenario datasets live in `references/scenarios/` (gitignored, regenerable): `ge
 
 ## Device-Accurate PNG Renders
 
-The trmnlp render route accepts device parameters directly — the whole device matrix is curl-able. Device classes and scale factors come from `https://trmnl.com/api/models`; render at logical resolution (physical ÷ scale factor).
+The trmnlp render route accepts device parameters directly — the whole device matrix is curl-able. Device classes, dimensions, and scale factors come from `https://trmnl.com/api/models`; trmnlp 0.11 renders at the model's physical pixel dimensions and applies the Framework's logical sizing internally.
 
-| Target | screen_classes | dims (logical) | depth |
+| Target | screen_classes | dims (physical) | depth |
 | --- | --- | --- | --- |
-| OG 1-bit | `screen screen--1bit screen--og_png screen--md screen--1x` | 800×480 | 1 |
-| OG 2-bit | `screen screen--2bit screen--ogv2 screen--md screen--1x` | 800×480 | 2 |
-| X landscape | `screen screen--4bit screen--v2 screen--lg screen--1x` | 1040×780 | 4 |
-| X portrait | X landscape + `screen--portrait` | 780×1040 | 4 |
+| OG 1-bit | `screen screen--1bit screen--og_png screen--md screen--density-1x` | 800×480 | 1 |
+| OG 2-bit | `screen screen--2bit screen--ogv2 screen--md screen--density-1x` | 800×480 | 2 |
+| X landscape | `screen screen--4bit screen--v2 screen--lg screen--density-2x` | 1872×1404 | 4 |
+| X portrait | X landscape + `screen--portrait` | 1404×1872 | 4 |
 
 ```sh
 curl -s -G 'http://localhost:4567/render/full.png' \
-  --data-urlencode 'screen_classes=screen screen--4bit screen--v2 screen--lg screen--1x' \
-  -d width=1040 -d height=780 -d color_depth=4 -o render.png
+  --data-urlencode 'screen_classes=screen screen--4bit screen--v2 screen--lg screen--density-2x' \
+  -d width=1872 -d height=1404 -d color_depth=4 -o render.png
 ```
 
 Swap `full` for any view name. Always judge layouts from PNG renders, not the HTML preview — dithering, text legibility, and clamping only show up in the rendered image.
@@ -101,10 +101,10 @@ Templates receive the Parcel API response directly. Key fields:
 
 ## Gotchas
 
-- **`trmnlp lint` does not exist in trmnlp 0.10.0** despite upstream docs; render-based verification is the real gate.
+- **`trmnlp lint` is a useful static check, but render-based verification remains the real gate.**
 - **The framework's JS overflow/clamp engines are not used in this codebase, deliberately.** They diverge between trmnlp's Firefox pipeline and production's Chromium (dropped rows, corrupted layouts, inert clamping — see the design doc's Implementation Deviations). All list overflow is deterministic Liquid caps + the shared `manifest_counter` ("and N more") row. Do not reintroduce `data-overflow-*`/`data-clamp` without verifying on production hardware.
 - **Titles wrap, never truncate.** Caps are sized for two-line rows; the cap table lives in `docs/designs/02-partition-and-framework-native-layout.md`.
-- **TRMNL X renders at logical resolution** (1040×780 = 1872×1404 ÷ 1.8 scale). Device classes and scale factors come from `https://trmnl.com/api/models`.
+- **trmnlp 0.11's render route takes TRMNL X's physical resolution** (1872×1404 landscape) while Framework classes retain its 1040×780 logical geometry and 1.8 pixel ratio.
 
 ## TRMNL-Specific Best Practices
 

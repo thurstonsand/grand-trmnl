@@ -11,25 +11,23 @@
     {% if upcoming_indices_arr.size > 0 or delivered_indices_arr.size > 0 %}
       {% assign manifest_count = upcoming_indices_arr.size | plus: delivered_indices_arr.size %}
       {% assign row_position = 0 %}
-      <div class="grid grid--cols-1 lg:grid--cols-2 lg:portrait:grid--cols-1 gap--xsmall">
+      <div class="grid grid--cols-1 gap--xsmall">
         {% for idx_str in upcoming_indices_arr %}
-          {% if row_position < 3 %}
+          {% if row_position < 2 %}
             {% assign idx = idx_str | plus: 0 %}
             {% assign d = deliveries[idx] %}
-            {% assign row_class = "py--0.5" %}
-            {% if row_position >= 1 %}{% assign row_class = "py--0.5 hidden lg:block" %}{% endif %}
-            {% if row_position >= 2 %}{% assign row_class = "py--0.5 hidden lg:block lg:portrait:hidden" %}{% endif %}
+            {% assign row_class = "" %}
+            {% if row_position >= 1 %}{% assign row_class = "hidden lg:block" %}{% endif %}
             {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, row_class: row_class, show_status: false, show_location: false, show_latest_event: true %}
           {% endif %}
           {% assign row_position = row_position | plus: 1 %}
         {% endfor %}
         {% for idx_str in delivered_indices_arr %}
-          {% if row_position < 3 %}
+          {% if row_position < 2 %}
             {% assign idx = idx_str | plus: 0 %}
             {% assign d = deliveries[idx] %}
-            {% assign row_class = "py--0.5" %}
-            {% if row_position >= 1 %}{% assign row_class = "py--0.5 hidden lg:block" %}{% endif %}
-            {% if row_position >= 2 %}{% assign row_class = "py--0.5 hidden lg:block lg:portrait:hidden" %}{% endif %}
+            {% assign row_class = "" %}
+            {% if row_position >= 1 %}{% assign row_class = "hidden lg:block" %}{% endif %}
             {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, row_class: row_class, show_status: false, show_location: false, show_latest_event: true %}
           {% endif %}
           {% assign row_position = row_position | plus: 1 %}
@@ -39,12 +37,8 @@
           {% render "manifest_counter", count: og_hidden_count, counter_class: "lg:hidden" %}
         {% endif %}
         {% if manifest_count > 2 %}
-          {% assign portrait_hidden_count = manifest_count | minus: 2 %}
-          {% render "manifest_counter", count: portrait_hidden_count, counter_class: "hidden portrait:block" %}
-        {% endif %}
-        {% if manifest_count > 3 %}
-          {% assign x_hidden_count = manifest_count | minus: 3 %}
-          {% render "manifest_counter", count: x_hidden_count, counter_class: "hidden lg:block lg:portrait:hidden" %}
+          {% assign x_hidden_count = manifest_count | minus: 2 %}
+          {% render "manifest_counter", count: x_hidden_count, counter_class: "hidden lg:block" %}
         {% endif %}
       </div>
     {% endif %}

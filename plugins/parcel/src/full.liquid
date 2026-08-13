@@ -4,8 +4,8 @@
   {% render "empty_state", title_class: "title lg:title--large" %}
 {% else %}
   <div class="layout layout--row portrait:layout--col layout--start layout--stretch-y gap--medium lg:gap--large portrait:gap--medium">
-    <div class="{% if upcoming_indices_arr.size > 0 %}landscape:grow landscape:w--0 portrait:w--full{% else %}w--full{% endif %}">
-      {% render "hero_slot", all_arrived: all_arrived, today_indices_arr: today_indices_arr, deliveries: deliveries, delivered_count: delivered_indices_arr.size, hero_idx: hero_idx, hero: hero, hero_date_expected: hero_date_expected, hero_days: hero_days, hero_late: hero_late, today_date: today_date, today_epoch: today_epoch, label_class: "label--base lg:label--large", days_value_class: "value value--large lg:value--xlarge", name_class: "title title--xlarge lg:title--xxlarge", detail_class: "description lg:description--xlarge", event_class: "description lg:description--large text--gray-30 4bit:text--gray-50", date_format: "%A, %b %-d", today_cap: 4, show_hero_location: false, show_all_arrived_detail: true, today_show_status: true, today_show_location: true %}
+    <div class="{% if upcoming_indices_arr.size > 0 %}grow w--0 portrait:w--full{% else %}w--full{% endif %}">
+      {% render "hero_slot", all_arrived: all_arrived, today_indices_arr: today_indices_arr, deliveries: deliveries, delivered_count: delivered_indices_arr.size, hero_idx: hero_idx, hero: hero, hero_date_expected: hero_date_expected, hero_days: hero_days, hero_late: hero_late, today_date: today_date, today_epoch: today_epoch, label_class: "label--base lg:label--large", days_value_class: "value value--large lg:value--xlarge", name_class: "title title--xlarge lg:title--xxlarge", detail_class: "description lg:description--xlarge", event_class: "description lg:description--large text--gray-25 4bit:text--gray-50", date_format: "%A, %b %-d", today_cap: 4, show_hero_location: false, show_all_arrived_detail: true, today_show_status: true, today_show_location: true %}
 
       {% if delivered_indices_arr.size > 0 %}
         <div class="border--h-black mt--2 pt--1">
@@ -25,17 +25,23 @@
     {% if upcoming_indices_arr.size > 0 %}
       <div class="h--full border--v-black portrait:hidden"></div>
       <div class="hidden portrait:block w--full border--h-black"></div>
-      <div class="landscape:grow landscape:w--0 portrait:grow portrait:h--0 portrait:w--full">
+      <div class="grow w--0 portrait:h--0 portrait:w--full">
         <div class="label label--small lg:label--large border--h-black pb--1 mb--1">{{ upcoming_indices_arr.size }} upcoming</div>
         <div class="grid grid--cols-1 lg:grid--cols-2 lg:portrait:grid--cols-1 gap--small lg:gap--medium lg:portrait:gap--small">
           {% for idx_str in upcoming_indices_arr limit: 8 %}
             {% assign idx = idx_str | plus: 0 %}
             {% assign d = deliveries[idx] %}
-            {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: true, show_location: true, show_latest_event: true %}
+            {% assign row_class = "" %}
+            {% if forloop.index0 >= 3 %}{% assign row_class = "portrait:hidden" %}{% endif %}
+            {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, row_class: row_class, show_status: true, show_location: true, show_latest_event: true %}
           {% endfor %}
+          {% if upcoming_indices_arr.size > 3 %}
+            {% assign portrait_hidden_count = upcoming_indices_arr.size | minus: 3 %}
+            {% render "manifest_counter", count: portrait_hidden_count, counter_class: "hidden portrait:block" %}
+          {% endif %}
           {% if upcoming_indices_arr.size > 8 %}
             {% assign hidden_count = upcoming_indices_arr.size | minus: 8 %}
-            {% render "manifest_counter", count: hidden_count %}
+            {% render "manifest_counter", count: hidden_count, counter_class: "portrait:hidden" %}
           {% endif %}
         </div>
       </div>

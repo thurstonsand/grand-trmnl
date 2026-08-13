@@ -4,7 +4,7 @@ no_screen_padding: 'no'
 dark_mode: 'no'
 static_data:
 polling_verb: get
-framework_version: 2.3.7
+framework_version: 3.2.0
 serverless_language:
 polling_url: https://api.parcel.app/external/deliveries/?filter_mode={{ filter_mode }}
 polling_headers: api-key={{ api_key }}
