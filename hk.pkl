@@ -7,6 +7,10 @@ hooks {
                 check = "mise run lint"
                 exclusive = true
             }
+            ["test"] {
+                check = "mise run test"
+                exclusive = true
+            }
         }
     }
 }

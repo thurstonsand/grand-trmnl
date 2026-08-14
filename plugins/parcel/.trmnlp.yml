@@ -10,6 +10,7 @@ custom_fields:
 variables:
   trmnl:
     user:
-      time_zone: America/New_York
+      time_zone: Eastern Time (US & Canada)
+      time_zone_iana: America/New_York
     plugin_settings:
       polling_url: http://localhost:8888/parcel_response.json

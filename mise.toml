@@ -39,6 +39,10 @@ quiet = true
 description = "Lint Markdown"
 run = "markdownlint-cli2 '**/*.md'"
 
+[tasks.test]
+description = "Run tests"
+run = "bash plugins/parcel/test/date_calculation_test.sh"
+
 [tasks.renovate]
 description = "Run Renovate locally"
 run = "renovate"

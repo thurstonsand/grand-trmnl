@@ -1,5 +1,5 @@
 {% comment %} ── Canonical partition: shared across all views ── {% endcomment %}
-{% assign today_date = 0 | days_ago: trmnl.user.time_zone | date: "%Y-%m-%d" %}
+{% assign today_date = 0 | days_ago: trmnl.user.time_zone_iana | date: "%Y-%m-%d" %}
 {% assign today_epoch = today_date | date: "%s" | plus: 0 %}
 {% assign today_indices = "" %}
 {% assign upcoming_dated_tokens = "" %}
