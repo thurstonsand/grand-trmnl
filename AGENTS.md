@@ -6,7 +6,7 @@ A monorepo of TRMNL e-paper plugins. Every screen departs from here.
 
 Each plugin lives in `plugins/<name>/` as a self-contained trmnlp project: `src/` (templates + settings.yml), `.trmnlp.yml`, its own `AGENTS.md`, `CONTEXT.md`, `PRODUCT.md`, `DEV.md`, and `docs/designs/`. Read the plugin's own docs before working on it.
 
-Shared at the root: mise owns the whole environment (`mise.toml` — tool pins, tasks, and an `enter` hook that bootstraps git hooks via hk), plus renovate config, markdownlint, and the `trmnl-development` skill (`.agents/skills/`) — TRMNL platform knowledge, framework reference, and hard-won gotchas that apply to every plugin.
+Shared at the root: mise owns the whole environment (`mise.toml` — Debian/macOS packages, env loading, tool pins, tasks, and git hooks via hk), plus renovate config, markdownlint, and the `trmnl-development` skill (`.agents/skills/`) — TRMNL platform knowledge, framework reference, and hard-won gotchas that apply to every plugin.
 
 ## Working here
 

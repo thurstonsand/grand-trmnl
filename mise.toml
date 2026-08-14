@@ -3,6 +3,11 @@ min_version = "2026.8.5"
 [settings]
 ruby.compile = false
 
+[bootstrap.packages]
+"apt:firefox-esr" = "latest"
+"brew:imagemagick" = { version = "latest", os = "macos/arm64" }
+"brew-cask:firefox" = { version = "latest", os = "macos/arm64" }
+
 [hooks]
 # Entering the repo reconciles everything: running a task hydrates every tool in
 # [tools], even when the task body is cached, and bootstrap installs the git hooks.
@@ -11,16 +16,13 @@ enter = "mise bootstrap --yes --quiet"
 [tools]
 # trmnl_preview depends on trmnl-liquid, which requires Ruby >= 4.0
 ruby = "4.0.6"
-python = "3.14.7"
 node = "26.7.0"
 hk = "1.55.0"
 "gem:trmnl_preview" = "0.11.0"
 "npm:markdownlint-cli2" = "0.23.2"
-"npm:renovate" = { version = "44.26.0", trust_policy_excludes = [
-  "@yarnpkg/libzip@3.2.2",
-] }
 
 [env]
+GEMRC = "{{config_root}}/.gemrc"
 HK_MISE = "1"
 
 [tasks.bootstrap]
@@ -36,3 +38,11 @@ quiet = true
 [tasks.lint]
 description = "Lint Markdown"
 run = "markdownlint-cli2 '**/*.md'"
+
+[tasks.renovate]
+description = "Run Renovate locally"
+run = "renovate"
+tools.node = "24.11.0"
+tools."npm:renovate" = { version = "44.26.0", trust_policy_excludes = [
+  "@yarnpkg/libzip@3.2.2",
+] }

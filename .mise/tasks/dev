@@ -25,7 +25,9 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
-python3 -m http.server 8888 --directory "$PLUGIN_DIR/references" &
+STATIC_ROOT="$PLUGIN_DIR/references" \
+  rackup -r rack/files -s puma -o 127.0.0.1 -p 8888 \
+  -b 'run Rack::Files.new(ENV.fetch("STATIC_ROOT"))' &
 JSON_PID=$!
 
 trmnlp serve -d "$PLUGIN_DIR" &

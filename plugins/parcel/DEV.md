@@ -2,7 +2,19 @@
 
 ## Environment
 
-This plugin lives at `plugins/parcel/` in the grand-trmnl monorepo; paths below are relative to this directory unless noted. All tooling is pinned in the repo-root `mise.toml` (Ruby, Python, trmnlp via the gem backend, markdownlint, renovate); `mise trust` once, then entering the directory sets up everything repo-local. System-level dependencies that mise cannot manage (Firefox as trmnlp's headless render backend, ImageMagick) live in the ansiblonomicon Brewfile.
+This plugin lives at `plugins/parcel/` in the grand-trmnl monorepo; paths below are relative to this directory.
+
+```sh
+mise trust
+mise bootstrap --yes
+```
+
+## TRMNL MCP and trmnlp
+
+The `trmnl-development` agent skill connects to TRMNL's remote MCP server when `TRMNL_MCP_API_KEY` is present. MCP complements rather than replaces trmnlp:
+
+- **MCP** inspects hosted merge variables, plugin health and logs, remote markup, recipes, and TRMNL design references. It can also update hosted markup and settings.
+- **trmnlp** owns source-controlled local development: serving, polling fixtures, device-accurate PNG rendering, and explicit push/pull operations.
 
 ## Project Structure
 

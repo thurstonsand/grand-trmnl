@@ -14,8 +14,6 @@ step() {
 
 packages=()
 command -v curl >/dev/null 2>&1 || packages+=(curl ca-certificates)
-command -v firefox >/dev/null 2>&1 || command -v firefox-esr >/dev/null 2>&1 || packages+=(firefox-esr)
-command -v magick >/dev/null 2>&1 || command -v convert >/dev/null 2>&1 || packages+=(imagemagick)
 
 if ((${#packages[@]})); then
   step "Refresh apt metadata" sudo apt-get update
@@ -45,7 +43,6 @@ EOF
 fi
 
 step "Trust repository configuration" "$mise_bin" trust --yes "$repo_root/mise.toml"
-step "Install pinned development tools" "$mise_bin" install --cd "$repo_root"
-step "Install repository hooks" "$mise_bin" run --cd "$repo_root" bootstrap
+step "Bootstrap repository environment" "$mise_bin" bootstrap --cd "$repo_root" --yes
 
 echo "==> Orb setup complete"

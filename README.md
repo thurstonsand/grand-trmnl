@@ -10,12 +10,11 @@ Every screen departs from here — a monorepo of plugins for [TRMNL](https://trm
 
 ## Layout
 
-Each plugin under `plugins/<name>/` is a self-contained [trmnlp](https://github.com/usetrmnl/trmnlp) project. Shared tooling lives at the root: [mise](https://mise.jdx.dev) pins the toolchain, renovate keeps it current.
+Each plugin under `plugins/<name>/` is a self-contained [trmnlp](https://github.com/usetrmnl/trmnlp) project. Shared tooling lives at the root: [mise](https://mise.jdx.dev) provisions the machine, activates the project environment, pins the toolchain, and runs tasks; Renovate keeps it current.
 
 ```sh
-mise trust              # once, per clone
-mise run dev [plugin]   # local preview at :4567 (defaults to parcel)
-mise run lint           # markdownlint; also gates commits
+mise trust            # once, per clone
+mise bootstrap --yes  # once, and whenever mise.toml changes
+mise run dev [plugin] # local preview at :4567 (defaults to parcel)
+mise run lint         # markdownlint; also gates commits
 ```
-
-Rendering previews requires Firefox and ImageMagick (see each plugin's DEV.md for why Firefox is load-bearing).
