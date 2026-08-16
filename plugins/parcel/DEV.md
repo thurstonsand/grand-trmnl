@@ -115,7 +115,7 @@ Templates receive the Parcel API response directly. Key fields:
 
 - **`trmnlp lint` is a useful static check, but render-based verification remains the real gate.**
 - **Lists use Framework 3.2's official `.columns > .column` overflow contract.** Fixed responsive column counts avoid the browser-sensitive best-fit optimizer; the runtime chooses visible rows from the available height and adds an honest "and N more" counter. Because trmnlp renders with Firefox while production uses Chromium, validate overflow behavior on real devices after publishing.
-- **Titles wrap, never truncate.** Overflow accounts for their rendered height; the plugin does not use the clamp runtime.
+- **Active titles wrap; delivered titles clamp to one line.** Overflow accounts for each row's rendered height.
 - **trmnlp 0.11's render route takes TRMNL X's physical resolution** (1872×1404 landscape) while Framework classes retain its 1040×780 logical geometry and 1.8 pixel ratio.
 
 ## TRMNL-Specific Best Practices

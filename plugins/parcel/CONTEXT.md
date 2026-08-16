@@ -20,7 +20,7 @@ Bucket for Deliveries that are out for delivery (status 4), ready for pickup (st
 Bucket for active Deliveries not arriving today, ordered by expected date ascending; date-less Deliveries keep API order at the end.
 
 **Delivered**:
-Bucket for Deliveries with status 0. Rendered dimmed, at the bottom of the left panel.
+Bucket for Deliveries with status 0. Rendered as compact, dimmed, checked title-only rows.
 
 **Hero**:
 The single Delivery promoted out of its Bucket into the large left slot. Precedence: sole Today item > Attention (7, then 6) > soonest expected arrival > date-less actives. A promoted Delivery never also renders in its Bucket's list.
@@ -38,4 +38,5 @@ A marker (not a Bucket) on any undelivered Delivery whose expected date has pass
 
 - Every **Delivery** belongs to exactly one **Bucket**; the **Hero** is removed from its Bucket's rendered list (exactly-once invariant).
 - **Late** and **Attention** are markers orthogonal to Buckets: a Late Delivery may sit in Today or Upcoming.
+- Constrained manifests show **Delivered** before dated **Upcoming**, then date-less **Upcoming**.
 - If all **Deliveries** are **Delivered**, a celebratory **All-Arrived** hero is shown.

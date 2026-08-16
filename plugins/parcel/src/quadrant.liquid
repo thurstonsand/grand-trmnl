@@ -8,15 +8,10 @@
       {% render "hero_slot", all_arrived: all_arrived, today_indices_arr: today_indices_arr, deliveries: deliveries, delivered_count: delivered_indices_arr.size, hero_idx: hero_idx, hero: hero, hero_date_expected: hero_date_expected, hero_days: hero_days, hero_late: hero_late, today_date: today_date, today_epoch: today_epoch, label_class: "label--small lg:label--base", days_value_class: "value lg:value--large", name_class: "title lg:title--large", detail_class: "description lg:description--large", event_class: "hidden", date_format: "%b %-d", show_hero_location: false, show_all_arrived_detail: false, today_show_status: false, today_show_location: false %}
     </div>
 
-    {% if upcoming_indices_arr.size > 0 or delivered_indices_arr.size > 0 %}
+    {% if constrained_manifest_indices_arr.size > 0 %}
       <div class="columns grow h--0 w--full" data-overflow-cols="1" data-overflow-counter="true">
         <div class="column flex--col flex--start">
-          {% for idx_str in upcoming_indices_arr %}
-            {% assign idx = idx_str | plus: 0 %}
-            {% assign d = deliveries[idx] %}
-            {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: false, show_location: false, show_latest_event: true %}
-          {% endfor %}
-          {% for idx_str in delivered_indices_arr %}
+          {% for idx_str in constrained_manifest_indices_arr %}
             {% assign idx = idx_str | plus: 0 %}
             {% assign d = deliveries[idx] %}
             {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: false, show_location: false, show_latest_event: true %}
