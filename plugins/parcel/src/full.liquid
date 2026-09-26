@@ -25,7 +25,7 @@
       <div class="hidden portrait:block w--full border--h-black"></div>
       <div class="grow w--0 portrait:h--0 portrait:w--full">
         <div class="label label--small lg:label--large border--h-black pb--1 mb--1">{{ upcoming_indices_arr.size }} upcoming</div>
-        <div class="columns" data-overflow-cols="1" data-overflow-cols-lg="2" data-overflow-cols-lg-portrait="1" data-overflow-counter="true">
+        <div class="columns" data-overflow-cols="1" data-overflow-counter="true">
           <div class="column flex--col flex--start">
             {% for idx_str in upcoming_indices_arr %}
               {% assign idx = idx_str | plus: 0 %}
