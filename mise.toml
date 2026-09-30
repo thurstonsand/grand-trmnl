@@ -27,12 +27,9 @@ HK_MISE = "1"
 
 [tasks.bootstrap]
 description = "Install git hooks"
-run = [
-    "hk install --mise --quiet",
-    "mkdir -p .mise && touch .mise/bootstrap",
-]
+run = "hk install --mise --quiet"
 sources = ["mise.toml", "hk.pkl"]
-outputs = [".mise/bootstrap"]
+outputs = { auto = true }
 quiet = true
 
 [tasks.lint]

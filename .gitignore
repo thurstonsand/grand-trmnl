@@ -7,6 +7,3 @@ _build
 
 # subagent working files
 .agents/scratch/
-
-# mise bootstrap marker
-.mise/bootstrap
