@@ -14,7 +14,7 @@ The single canonical assignment of every Delivery to exactly one Bucket, compute
 One of the disjoint groups a Delivery lands in: Today, Upcoming, or Delivered.
 
 **Today**:
-Bucket for Deliveries that are out for delivery (status 4), ready for pickup (status 3), or expected today while active. Overdue Deliveries do not belong here.
+Bucket for Deliveries that are out for delivery (status 4), ready for pickup (status 3), or expected today while moving (status 2, 6, or 7). A carrier's expected date alone does not count: Label-created (8), Not-found (5), and Frozen (1) Deliveries stay in Upcoming. Overdue Deliveries do not belong here.
 
 **Upcoming**:
 Bucket for active Deliveries not arriving today, ordered by expected date ascending; date-less Deliveries keep API order at the end.

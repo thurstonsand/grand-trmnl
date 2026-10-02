@@ -22,8 +22,10 @@
     {% assign expected_date = "" %}
     {% if date_expected != blank %}{% assign expected_date = date_expected | slice: 0, 10 %}{% endif %}
     {% assign is_today = false %}
-    {% if d.status_code == 4 or d.status_code == 3 or expected_date == today_date %}
+    {% if d.status_code == 4 or d.status_code == 3 %}
       {% assign is_today = true %}
+    {% elsif expected_date == today_date %}
+      {% if d.status_code == 2 or d.status_code == 6 or d.status_code == 7 %}{% assign is_today = true %}{% endif %}
     {% endif %}
 
     {% if is_today %}
@@ -201,7 +203,7 @@
           <span class="font--bold">✓</span>
         {% elsif is_attention %}
           <span class="font--bold">!</span>
-        {% elsif d_days != nil %}
+        {% elsif d_days and d_days >= 1 %}
           <span class="font--bold">{{ d_days }}</span>
         {% else %}
           <span class="font--bold">—</span>
