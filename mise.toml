@@ -15,11 +15,11 @@ enter = "mise bootstrap --yes --quiet"
 
 [tools]
 # trmnl_preview depends on trmnl-liquid, which requires Ruby >= 4.0
-ruby = "4.0.6"
-node = "26.7.0"
+ruby = "4.0.7"
+node = "26.10.0"
 hk = "1.55.0"
-"gem:trmnl_preview" = "0.11.0"
-"npm:markdownlint-cli2" = "0.23.2"
+"gem:trmnl_preview" = "0.15.0"
+"npm:markdownlint-cli2" = "0.23.3"
 
 [env]
 GEMRC = "{{config_root}}/.gemrc"
@@ -43,7 +43,7 @@ run = "bash plugins/parcel/test/date_calculation_test.sh"
 [tasks.renovate]
 description = "Run Renovate locally"
 run = "renovate"
-tools.node = "24.11.0"
-tools."npm:renovate" = { version = "44.26.0", trust_policy_excludes = [
+tools.node = "24.21.0"
+tools."npm:renovate" = { version = "44.132.4", trust_policy_excludes = [
   "@yarnpkg/libzip@3.2.2",
 ] }
