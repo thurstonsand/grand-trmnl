@@ -49,7 +49,7 @@ Scenario datasets live in `references/scenarios/` (gitignored, regenerable): `ge
 
 ## Device-Accurate PNG Renders
 
-The trmnlp render route accepts device parameters directly — the whole device matrix is curl-able. Device classes, dimensions, and scale factors come from `https://trmnl.com/api/models`; trmnlp 0.15 renders at the model's physical pixel dimensions and applies the Framework's logical sizing internally.
+The trmnlp render route accepts device parameters directly — the whole device matrix is curl-able. Device classes, dimensions, and scale factors come from `https://trmnl.com/api/models`; trmnlp 0.16 renders at the model's physical pixel dimensions and applies the Framework's logical sizing internally.
 
 | Target | screen_classes | dims (physical) | depth |
 | --- | --- | --- | --- |
@@ -116,7 +116,7 @@ Templates receive the Parcel API response directly. Key fields:
 - **`trmnlp lint` is a useful static check, but render-based verification remains the real gate.**
 - **Lists use Framework 3.2's official `.columns > .column` overflow contract.** Fixed responsive column counts avoid the browser-sensitive best-fit optimizer; the runtime chooses visible rows from the available height and adds an honest "and N more" counter. Because trmnlp renders with Firefox while production uses Chromium, validate overflow behavior on real devices after publishing.
 - **Active titles wrap; delivered titles clamp to one line.** Overflow accounts for each row's rendered height.
-- **trmnlp 0.15's render route takes TRMNL X's physical resolution** (1872×1404 landscape) while Framework classes retain its 1040×780 logical geometry and 1.8 pixel ratio.
+- **trmnlp 0.16's render route takes TRMNL X's physical resolution** (1872×1404 landscape) while Framework classes retain its 1040×780 logical geometry and 1.8 pixel ratio.
 
 ## TRMNL-Specific Best Practices
 
