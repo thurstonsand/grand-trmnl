@@ -16,9 +16,9 @@ enter = "mise bootstrap --yes --quiet"
 [tools]
 # trmnl_preview depends on trmnl-liquid, which requires Ruby >= 4.0
 ruby = "4.0.7"
-node = "26.10.0"
+node = "26.11.1"
 hk = "2.5.0"
-"gem:trmnl_preview" = "0.20.0"
+"gem:trmnl_preview" = "0.27.0"
 "npm:markdownlint-cli2" = "0.23.3"
 
 [env]
@@ -44,6 +44,6 @@ run = "bash plugins/parcel/test/date_calculation_test.sh"
 description = "Run Renovate locally"
 run = "renovate"
 tools.node = "24.21.0"
-tools."npm:renovate" = { version = "44.139.0", trust_policy_excludes = [
+tools."npm:renovate" = { version = "44.149.2", trust_policy_excludes = [
   "@yarnpkg/libzip@3.2.2",
 ] }
