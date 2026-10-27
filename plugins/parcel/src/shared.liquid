@@ -1,5 +1,10 @@
+{% assign success = IDX_0.success %}
+{% assign error_message = IDX_0.error_message %}
+{% assign deliveries = IDX_0.deliveries %}
+
 <style>
   .column > .delivered-row + .delivered-row { margin-top: calc(-1 * var(--gap)); }
+  .bin-glyphs svg { height: 1.6em; width: auto; }
 </style>
 
 {% comment %} ── Canonical partition: shared across all views ── {% endcomment %}
@@ -119,10 +124,39 @@
   {% endif %}
 {% endif %}
 
+{% comment %} ── Bin reminder: next ReCollect pickup, shown from noon the day before until noon the day of ── {% endcomment %}
+{% assign bin_local_seconds = trmnl.system.timestamp_utc | plus: trmnl.user.utc_offset %}
+{% assign bin_hour = bin_local_seconds | modulo: 86400 | divided_by: 3600 %}
+{% assign bin_local_noon = bin_local_seconds | divided_by: 86400 | times: 86400 | plus: 43200 %}
+{% assign bin_today = bin_local_noon | date: "%Y-%m-%d" %}
+{% assign bin_tomorrow = bin_local_noon | plus: 86400 | date: "%Y-%m-%d" %}
+{% assign bin_day = "" %}
+{% assign bin_recycling = false %}
+{% for e in IDX_1.events %}
+  {% if e.day >= bin_today %}
+    {% if bin_day != "" and e.day != bin_day %}{% break %}{% endif %}
+    {% for f in e.flags %}
+      {% if f.event_type == "pickup" %}
+        {% assign bin_day = e.day %}
+        {% if f.name == "Recycling" %}{% assign bin_recycling = true %}{% endif %}
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+{% endfor %}
+{% assign bin_when = "" %}
+{% if bin_day == bin_today and bin_hour < 12 %}
+  {% assign bin_when = "today" %}
+{% elsif bin_day == bin_tomorrow and bin_hour >= 12 %}
+  {% assign bin_when = "tonight" %}
+{% endif %}
+
 {% comment %} ── Templates ── {% endcomment %}
 {% template error_state %}
   <div class="layout layout--center">
-    <span class="{{ title_class }}">{{ error_message | default: "Unable to reach Parcel" }}</span>
+    <div class="flex flex--col flex--center-x text--center">
+      <span class="{{ title_class }}">{{ error_message | default: "Unable to reach Parcel" }}</span>
+      {% if bin_when != "" %}{% render "bin_row", recycling: bin_recycling, when: bin_when, title_class: title_class, row_class: "p--1 lg:p--2 mt--2" %}{% endif %}
+    </div>
   </div>
 {% endtemplate %}
 
@@ -131,6 +165,7 @@
     <div class="flex flex--col flex--center-x gap--xsmall text--center">
       <div class="{{ title_class }}">Nothing incoming.</div>
       <div class="description lg:description--large">Enjoy the quiet.</div>
+      {% if bin_when != "" %}{% render "bin_row", recycling: bin_recycling, when: bin_when, title_class: title_class, row_class: "p--1 lg:p--2 mt--2" %}{% endif %}
     </div>
   </div>
 {% endtemplate %}
@@ -222,6 +257,30 @@
           {{ d.events[0].event }}{% if d.events[0].location %} · {{ d.events[0].location }}{% endif %}
         </span>
       {% endif %}
+    </div>
+  </div>
+{% endtemplate %}
+
+{% template bin_row %}
+  <div class="item w--full bg--black rounded {{ row_class }}" style="flex-shrink: 0;">
+    <div class="w--full flex flex--row flex--center-y gap--small lg:gap--medium {{ title_class }} text--white">
+      <span class="bin-glyphs flex flex--row gap--xsmall" aria-hidden="true">
+        <svg viewBox="0 0 24 30">
+          <rect x="9" y="0.5" width="6" height="2.5" rx="1" fill="white"/>
+          <rect x="1.5" y="3" width="21" height="3.5" rx="1" fill="white"/>
+          <path d="M4 8 H20 L18.4 28.5 H5.6 Z" fill="white" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+          <path d="M12 12.5 L15.6 14.6 V18.8 L12 20.9 L8.4 18.8 V14.6 Z" fill="black"/>
+        </svg>
+        {% if recycling %}
+          <svg viewBox="0 0 24 30">
+            <rect x="9" y="0.5" width="6" height="2.5" rx="1" fill="white"/>
+            <rect x="1.5" y="3" width="21" height="3.5" rx="1" fill="white"/>
+            <path d="M4 8 H20 L18.4 28.5 H5.6 Z" fill="black" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+            <path d="M12 11.8 L16.6 20 H7.4 Z" fill="none" stroke="white" stroke-width="2.2" stroke-linejoin="round"/>
+          </svg>
+        {% endif %}
+      </span>
+      <span>Bins out {{ when }}</span>
     </div>
   </div>
 {% endtemplate %}

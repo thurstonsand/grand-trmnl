@@ -1,11 +1,12 @@
 {% if success == false %}
-  {% render "error_state", error_message: error_message, title_class: "title title--small lg:title--base" %}
+  {% render "error_state", error_message: error_message, title_class: "title title--small lg:title--base", bin_when: bin_when, bin_recycling: bin_recycling %}
 {% elsif deliveries.size == 0 %}
-  {% render "empty_state", title_class: "title title--small lg:title--base" %}
+  {% render "empty_state", title_class: "title title--small lg:title--base", bin_when: bin_when, bin_recycling: bin_recycling %}
 {% else %}
   <div class="layout layout--row portrait:layout--col layout--start layout--stretch-y gap--small lg:gap--medium">
-    <div class="{% if upcoming_indices_arr.size > 0 %}grow w--0 portrait:w--full{% else %}w--full{% endif %}">
+    <div class="{% if upcoming_indices_arr.size > 0 or bin_when == "tonight" %}grow w--0 portrait:w--full{% else %}w--full{% endif %}">
       {% render "hero_slot", all_arrived: all_arrived, today_indices_arr: today_indices_arr, deliveries: deliveries, delivered_count: delivered_indices_arr.size, hero_idx: hero_idx, hero: hero, hero_date_expected: hero_date_expected, hero_days: hero_days, hero_late: hero_late, today_date: today_date, today_epoch: today_epoch, label_class: "label--small lg:label--base", days_value_class: "value lg:value--large", name_class: "title lg:title--large", detail_class: "description lg:description--large", event_class: "hidden", date_format: "%b %-d", show_hero_location: true, show_all_arrived_detail: false, today_show_status: true, today_show_location: false %}
+      {% if bin_when == "today" %}{% render "bin_row", recycling: bin_recycling, when: bin_when, title_class: "title title--small lg:title--base", row_class: "p--1 lg:p--2 mt--1" %}{% endif %}
 
       {% if delivered_indices_arr.size > 0 %}
         <div class="columns border--h-black mt--1 pt--1" data-overflow-cols="1" data-overflow-counter="true">
@@ -20,12 +21,13 @@
       {% endif %}
     </div>
 
-    {% if upcoming_indices_arr.size > 0 %}
+    {% if upcoming_indices_arr.size > 0 or bin_when == "tonight" %}
       <div class="h--full border--v-black portrait:hidden"></div>
       <div class="hidden portrait:block w--full border--h-black"></div>
       <div class="grow w--0 portrait:h--0 portrait:w--full">
         <div class="columns" data-overflow-cols="1" data-overflow-cols-lg="2" data-overflow-cols-lg-portrait="1" data-overflow-counter="true">
           <div class="column flex--col flex--start">
+            {% if bin_when == "tonight" %}{% render "bin_row", recycling: bin_recycling, when: bin_when, title_class: "title title--small lg:title--base", row_class: "p--1 lg:p--2 mb--1" %}{% endif %}
             {% for idx_str in upcoming_indices_arr %}
               {% assign idx = idx_str | plus: 0 %}
               {% assign d = deliveries[idx] %}

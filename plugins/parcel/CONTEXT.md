@@ -34,6 +34,9 @@ A Delivery with status 7 (exception) or 6 (failed attempt). Rendered bold with i
 **Late**:
 A marker (not a Bucket) on any undelivered Delivery whose expected date has passed. Replaces the days-away number. Persists even if the Delivery is promoted to Today or Hero (e.g. late package goes out for delivery).
 
+**Bin Reminder**:
+An inverted "Bins out tonight" / "Bins out today" row for the next ReCollect curbside pickup, with one bin icon per collected stream (Garbage, Recycling). Shown only from noon the day before pickup until noon the day of. Not a Delivery: it never joins the Partition, but "tonight" sits with Upcoming and "today" with Today.
+
 ## Relationships
 
 - Every **Delivery** belongs to exactly one **Bucket**; the **Hero** is removed from its Bucket's rendered list (exactly-once invariant).

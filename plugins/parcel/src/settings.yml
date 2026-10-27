@@ -6,30 +6,15 @@ static_data:
 polling_verb: get
 framework_version: 3.2.0
 serverless_language:
-polling_url: https://api.parcel.app/external/deliveries/?filter_mode={{ filter_mode }}
+refresh_interval_floor:
+polling_url: |-
+  https://api.parcel.app/external/deliveries/?filter_mode={{ filter_mode }}
+  https://api.recollect.net/api/places/{{ recollect_place_id }}/services/1185/events?hide=reminder_only&after={{ "now" | date: "%s" | minus: 86400 | date: "%Y-%m-%d" }}&before={{ "now" | date: "%s" | plus: 1296000 | date: "%Y-%m-%d" }}
 polling_headers: api-key={{ api_key }}
 polling_body:
 id: 257488
 oauth_enabled: 'false'
 oauth_pkce_enabled: 'no'
-oauth_authorize_url: ''
-oauth_token_url: ''
-oauth_scopes: ''
-oauth_scope_separator: ''
-oauth_refresh_url: ''
-oauth_auth_params: ''
-oauth_token_headers: ''
-oauth_token_site: ''
-oauth_token_params: ''
-oauth_token_request_auth_method: ''
-oauth_body_format: ''
-oauth_token_response_metadata: ''
-oauth_authorization_method: ''
-oauth_refresh_params: ''
-oauth_token_field_name: ''
-oauth_expiry_field_name: ''
-oauth_expiry_strategy: ''
-oauth_fixed_expiry_ms: ''
 custom_fields:
 - keyname: api_key
   name: Parcel API Key
@@ -40,6 +25,9 @@ custom_fields:
   options:
   - recent
   - active
+- keyname: recollect_place_id
+  name: ReCollect Place ID
+  field_type: string
 name: Parcel
 description:
 refresh_interval: 60

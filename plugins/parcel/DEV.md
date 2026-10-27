@@ -28,6 +28,7 @@ src/
   settings.yml           # Plugin config (polling strategy, form fields)
 references/
   parcel_response.json   # Dummy Parcel API response for local preview
+  recollect_response.json # ReCollect pickup schedule for local preview
 docs/designs/            # Design docs (numbered, historical artifacts)
 .trmnlp.yml              # Local dev overrides (polling URL, custom fields, variables)
 ```
@@ -40,10 +41,21 @@ mise run dev parcel   # from repo root; parcel is the default
 
 Starts two processes:
 
-- **JSON server** at `http://localhost:8888` — serves `references/parcel_response.json`
+- **JSON server** at `http://localhost:8888` — serves `references/parcel_response.json` and `references/recollect_response.json`
 - **trmnlp preview** at `http://localhost:4567` — renders all four views with live reload on `src/` changes
 
 The dev server polls `polling_url` from `.trmnlp.yml`, which points at the local JSON server. Edit `references/parcel_response.json` to test different data states — then hit `curl http://localhost:4567/poll` to force a re-fetch (trmnlp caches polled data and `references/` is not in its watch list).
+
+`references/` is gitignored. Seed the pickup schedule from the live feed:
+
+```sh
+curl -fsSLG "https://api.recollect.net/api/places/$RECOLLECT_PLACE_ID/services/1185/events" \
+  --data-urlencode hide=reminder_only \
+  --data-urlencode after="$(date -d yesterday +%F)" --data-urlencode before="$(date -d '+15 days' +%F)" \
+  -o references/recollect_response.json
+```
+
+The Bin Reminder depends on the time of day, so preview its window by pinning the clock in `.trmnlp.yml` under `variables.trmnl`: `system.timestamp_utc` (epoch seconds) and `user.utc_offset` (seconds, e.g. `-14400` for EDT).
 
 Scenario datasets live in `references/scenarios/` (gitignored, regenerable): `generate.py` writes date-relative fixtures for every state — today/upcoming mixes, all-delivered, overdue, attention, missing dates, dense (18-delivery stress), empty, error — and `render.sh <scenario> <view> <og|x|x-portrait> <out.png>` does the swap + poll + device-accurate render in one step.
 
@@ -83,11 +95,16 @@ mise run lint   # markdownlint on all Markdown files
 
 ## Merge Variables
 
-Templates receive the Parcel API response directly. Key fields:
+Two polling URLs, so responses are namespaced: `IDX_0` is Parcel, `IDX_1` is ReCollect. `shared.liquid` re-assigns `success`, `error_message`, and `deliveries` from `IDX_0`; everything downstream reads those. Parcel key fields:
 
 - `success` (bool) — `false` means show `error_message`
 - `deliveries` (array) — each entry has `description`, `status_code`, `carrier_code`, `tracking_number`, `date_expected`, `extra_information`, and `events[]`
 - `events[].event`, `events[].date`, `events[].location`
+
+ReCollect (`IDX_1`, see `docs/designs/03-bin-reminder.md`):
+
+- `events[].day` — pickup date, `YYYY-MM-DD`
+- `events[].flags[]` — `event_type == "pickup"` flags name a stream (`Garbage`, `Recycling`); holiday events carry a `holiday` flag with no `event_type`
 
 ### Status Codes
 
@@ -110,12 +127,14 @@ Templates receive the Parcel API response directly. Key fields:
 - `date_expected` missing → hide ETA
 - `events` empty → hide latest event
 - `events[0].location` missing → hide location
+- `IDX_1.events` missing (ReCollect down) → no Bin Reminder
 
 ## Gotchas
 
 - **`trmnlp lint` is a useful static check, but render-based verification remains the real gate.**
 - **Lists use Framework 3.2's official `.columns > .column` overflow contract.** Fixed responsive column counts avoid the browser-sensitive best-fit optimizer; the runtime chooses visible rows from the available height and adds an honest "and N more" counter. Because trmnlp renders with Firefox while production uses Chromium, validate overflow behavior on real devices after publishing.
 - **Active titles wrap; delivered titles clamp to one line.** Overflow accounts for each row's rendered height.
+- **Polling headers go to every polling URL**, so ReCollect also receives the Parcel `api-key` header. It ignores it.
 - **trmnlp 0.20's render route takes TRMNL X's physical resolution** (1872×1404 landscape) while Framework classes retain its 1040×780 logical geometry and 1.8 pixel ratio.
 
 ## TRMNL-Specific Best Practices

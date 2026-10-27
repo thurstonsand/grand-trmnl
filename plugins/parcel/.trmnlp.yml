@@ -6,6 +6,7 @@ watch:
 custom_fields:
   api_key: "{{ env.PARCEL_API_KEY }}"
   filter_mode: recent
+  recollect_place_id: "{{ env.RECOLLECT_PLACE_ID }}"
 
 variables:
   trmnl:
@@ -13,4 +14,6 @@ variables:
       time_zone: Eastern Time (US & Canada)
       time_zone_iana: America/New_York
     plugin_settings:
-      polling_url: http://localhost:8888/parcel_response.json
+      polling_url: |-
+        http://localhost:8888/parcel_response.json
+        http://localhost:8888/recollect_response.json
