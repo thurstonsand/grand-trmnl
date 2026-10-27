@@ -133,6 +133,7 @@ ReCollect (`IDX_1`, see `docs/designs/03-bin-reminder.md`):
 
 - **`trmnlp lint` is a useful static check, but render-based verification remains the real gate.**
 - **Lists use Framework 3.2's official `.columns > .column` overflow contract.** Fixed responsive column counts avoid the browser-sensitive best-fit optimizer; the runtime chooses visible rows from the available height and adds an honest "and N more" counter. Because trmnlp renders with Firefox while production uses Chromium, validate overflow behavior on real devices after publishing.
+- **Overflow budgets come from the `.columns` parent's bottom edge.** A list inside a content-sized wrapper measures its own height, so it can never truncate for lack of space, only drop rows to sub-pixel rounding. That is why the Today Panel list (inside `hero_slot`) is not overflow-managed. Opt a list in only when its parent is height-bounded.
 - **Active titles wrap; delivered titles clamp to one line.** Overflow accounts for each row's rendered height.
 - **Polling headers go to every polling URL**, so ReCollect also receives the Parcel `api-key` header. It ignores it.
 - **trmnlp 0.20's render route takes TRMNL X's physical resolution** (1872×1404 landscape) while Framework classes retain its 1040×780 logical geometry and 1.8 pixel ratio.
