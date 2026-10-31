@@ -293,15 +293,6 @@
       {% if show_all_arrived_detail %}<div class="{{ detail_class }}">Everything made it.</div>{% endif %}
     {% elsif today_indices_arr.size > 1 %}
       <div class="label {{ label_class }}">Arriving today</div>
-      <div class="columns mt--1">
-        <div class="column flex--col flex--start">
-          {% for idx_str in today_indices_arr %}
-            {% assign idx = idx_str | plus: 0 %}
-            {% assign d = deliveries[idx] %}
-            {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: today_show_status, show_location: today_show_location, show_latest_event: true, hide_indicator: true %}
-          {% endfor %}
-        </div>
-      </div>
     {% elsif hero_idx >= 0 %}
       <div class="label {{ label_class }}">
         {% render "status_label", status_code: hero.status_code %}

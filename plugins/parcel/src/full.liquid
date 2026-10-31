@@ -3,38 +3,59 @@
 {% elsif deliveries.size == 0 %}
   {% render "empty_state", title_class: "title lg:title--large", bin_when: bin_when, bin_recycling: bin_recycling %}
 {% else %}
-  <div class="layout layout--row portrait:layout--col layout--start layout--stretch-y gap--medium lg:gap--large portrait:gap--medium">
-    <div class="{% if upcoming_indices_arr.size > 0 or bin_when == "tonight" %}grow w--0 portrait:w--full{% else %}w--full{% endif %}">
-      {% render "hero_slot", all_arrived: all_arrived, today_indices_arr: today_indices_arr, deliveries: deliveries, delivered_count: delivered_indices_arr.size, hero_idx: hero_idx, hero: hero, hero_date_expected: hero_date_expected, hero_days: hero_days, hero_late: hero_late, today_date: today_date, today_epoch: today_epoch, label_class: "label--base lg:label--large", days_value_class: "value value--large lg:value--xlarge", name_class: "title title--xlarge lg:title--xxlarge", detail_class: "description lg:description--xlarge", event_class: "description lg:description--large text--gray-25 4bit:text--gray-50", date_format: "%A, %b %-d", show_hero_location: false, show_all_arrived_detail: true, today_show_status: true, today_show_location: true %}
-      {% if bin_when == "today" %}{% render "bin_row", recycling: bin_recycling, when: bin_when, title_class: "title lg:title--large", row_class: "p--2 lg:p--3 mt--2" %}{% endif %}
+  {% assign has_upcoming_region = false %}
+  {% if upcoming_indices_arr.size > 0 or bin_when == "tonight" %}{% assign has_upcoming_region = true %}{% endif %}
 
-      {% if delivered_indices_arr.size > 0 %}
-        <div class="columns border--h-black mt--2 pt--1" data-overflow-cols="1" data-overflow-counter="true">
+  {% capture left_rows %}
+    {% for idx_str in today_indices_arr %}
+      {% assign idx = idx_str | plus: 0 %}
+      {% assign d = deliveries[idx] %}
+      {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: true, show_location: true, show_latest_event: true, hide_indicator: true %}
+    {% endfor %}
+    {% if bin_when == "today" %}{% render "bin_row", recycling: bin_recycling, when: bin_when, title_class: "title lg:title--large", row_class: "p--2 lg:p--3" %}{% endif %}
+    {% for idx_str in delivered_indices_arr %}
+      {% assign idx = idx_str | plus: 0 %}
+      {% assign d = deliveries[idx] %}
+      {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: true, show_location: false, show_latest_event: true %}
+    {% endfor %}
+  {% endcapture %}
+
+  {% capture right_rows %}
+    {% if bin_when == "tonight" %}{% render "bin_row", recycling: bin_recycling, when: bin_when, title_class: "title lg:title--large", row_class: "p--2 lg:p--3 mb--2" %}{% endif %}
+    {% for idx_str in upcoming_indices_arr %}
+      {% assign idx = idx_str | plus: 0 %}
+      {% assign d = deliveries[idx] %}
+      {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: true, show_location: true, show_latest_event: true %}
+    {% endfor %}
+  {% endcapture %}
+
+  <div class="layout layout--row portrait:layout--col layout--start layout--stretch-y gap--medium lg:gap--large portrait:gap--medium">
+    <div class="{% if has_upcoming_region %}grow w--0 portrait:w--full{% else %}w--full{% endif %} h--min-0">
+      {% render "hero_slot", all_arrived: all_arrived, today_indices_arr: today_indices_arr, delivered_count: delivered_indices_arr.size, hero_idx: hero_idx, hero: hero, hero_date_expected: hero_date_expected, hero_days: hero_days, hero_late: hero_late, label_class: "label--base lg:label--large", days_value_class: "value value--large lg:value--xlarge", name_class: "title title--xlarge lg:title--xxlarge", detail_class: "description lg:description--xlarge", event_class: "description lg:description--large text--gray-25 4bit:text--gray-50", date_format: "%A, %b %-d", show_hero_location: false, show_all_arrived_detail: true %}
+
+      {% if today_indices_arr.size > 0 or bin_when == "today" or delivered_indices_arr.size > 0 %}
+        <div class="columns border--h-black mt--2 pt--1{% if has_upcoming_region %} portrait:hidden{% endif %}" data-overflow-cols="1" data-overflow-counter="true">
+          <div class="column flex--col flex--start">{{ left_rows }}</div>
+        </div>
+      {% endif %}
+
+      {% if has_upcoming_region %}
+        <div class="columns landscape:hidden border--h-black mt--2 pt--1" data-overflow-cols="1" data-overflow-counter="true">
           <div class="column flex--col flex--start">
-            {% for idx_str in delivered_indices_arr %}
-              {% assign idx = idx_str | plus: 0 %}
-              {% assign d = deliveries[idx] %}
-              {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: true, show_location: false, show_latest_event: true %}
-            {% endfor %}
+            {{ left_rows }}
+            {% if upcoming_indices_arr.size > 0 %}<div class="label label--small lg:label--large border--h-black pb--1 mb--1 self--start" data-group-header="true">{{ upcoming_indices_arr.size }} upcoming</div>{% endif %}
+            {{ right_rows }}
           </div>
         </div>
       {% endif %}
     </div>
 
-    {% if upcoming_indices_arr.size > 0 or bin_when == "tonight" %}
+    {% if has_upcoming_region %}
       <div class="h--full border--v-black portrait:hidden"></div>
-      <div class="hidden portrait:block w--full border--h-black"></div>
-      <div class="grow w--0 portrait:h--0 portrait:w--full">
+      <div class="grow w--0 portrait:hidden">
         {% if upcoming_indices_arr.size > 0 %}<div class="label label--small lg:label--large border--h-black pb--1 mb--1">{{ upcoming_indices_arr.size }} upcoming</div>{% endif %}
         <div class="columns" data-overflow-cols="1" data-overflow-counter="true">
-          <div class="column flex--col flex--start">
-            {% if bin_when == "tonight" %}{% render "bin_row", recycling: bin_recycling, when: bin_when, title_class: "title lg:title--large", row_class: "p--2 lg:p--3 mb--2" %}{% endif %}
-            {% for idx_str in upcoming_indices_arr %}
-              {% assign idx = idx_str | plus: 0 %}
-              {% assign d = deliveries[idx] %}
-              {% render "manifest_row", d: d, today_date: today_date, today_epoch: today_epoch, show_status: true, show_location: true, show_latest_event: true %}
-            {% endfor %}
-          </div>
+          <div class="column flex--col flex--start">{{ right_rows }}</div>
         </div>
       </div>
     {% endif %}

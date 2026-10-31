@@ -26,7 +26,7 @@ Bucket for Deliveries with status 0. Rendered as compact, dimmed, checked title-
 The single Delivery promoted out of its Bucket into the large left slot. Precedence: sole Today item > Attention (7, then 6) > soonest expected arrival > date-less actives. A promoted Delivery never also renders in its Bucket's list.
 
 **Today Panel**:
-The left-slot list that replaces the Hero when more than one Delivery is in Today.
+What replaces the Hero when more than one Delivery is in Today: an "Arriving today" label, with the Today rows leading the region's overflow list (Delivered in the two-column views, the manifest in the single-column views and in portrait `full`/`half_horizontal`), so they are the last rows hidden.
 
 **Attention**:
 A Delivery with status 7 (exception) or 6 (failed attempt). Rendered bold with its status label in the Upcoming manifest; only takes the Hero slot when nothing arrives today.
