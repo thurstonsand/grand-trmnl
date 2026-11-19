@@ -1,6 +1,8 @@
 min_version = "2026.11.1"
 
 [settings]
+# Every tool, and every package mise locks under it, waits 3 days after release, like Renovate.
+minimum_release_age = "3d"
 ruby.compile = false
 
 [bootstrap.packages]
@@ -33,17 +35,26 @@ outputs = { auto = true }
 quiet = true
 
 [tasks.lint]
+description = "Lint"
+depends = ["lint:*"]
+
+[tasks."lint:markdown"]
 description = "Lint Markdown"
 run = "markdownlint-cli2 '**/*.md'"
+
+# Renovate's tasks run under MISE_ENV=renovate, whose mise.renovate.toml overlays Renovate and the
+# Node it supports, so its install stays out of every bootstrap and mise both installs and runs it
+# on that Node: re2, Renovate's native regex engine, is built for the Node that installs it and
+# refuses to load in another, leaving validation on JavaScript RegExp with only a warning. `mise x`
+# also puts that Node ahead of a Homebrew one already on PATH.
+[tasks."lint:renovate"]
+description = "Validate Renovate configuration"
+run = "MISE_ENV=renovate mise x -- renovate-config-validator renovate.json"
 
 [tasks.test]
 description = "Run tests"
 run = "bash plugins/parcel/test/date_calculation_test.sh"
 
 [tasks.renovate]
-description = "Run Renovate locally"
-run = "renovate"
-tools.node = "24.21.0"
-tools."npm:renovate" = { version = "44.139.0", trust_policy_excludes = [
-  "@yarnpkg/libzip@3.2.2",
-] }
+description = "Run Renovate"
+run = "MISE_ENV=renovate mise x -- renovate"
