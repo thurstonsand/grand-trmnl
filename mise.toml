@@ -17,11 +17,11 @@ enter = "mise bootstrap --yes --quiet"
 
 [tools]
 # trmnl_preview depends on trmnl-liquid, which requires Ruby >= 4.0
-ruby = "4.0.7"
-node = "26.10.0"
+ruby = "4.0.10"
+node = "26.13.1"
 hk = "2.5.0"
-"gem:trmnl_preview" = "0.20.0"
-"npm:markdownlint-cli2" = "0.23.3"
+"gem:trmnl_preview" = "0.34.1"
+"npm:markdownlint-cli2" = "0.24.1"
 
 [env]
 GEMRC = "{{config_root}}/.gemrc"
