@@ -3,9 +3,9 @@
 lockfile_version = 4
 
 [[tools."gem:trmnl_preview"]]
-version = "0.20.0"
+version = "0.34.1"
 backend = "gem:trmnl_preview"
-specifiers = ["0.20.0"]
+specifiers = ["0.34.1"]
 
 [[tools.hk]]
 version = "2.13.0"
