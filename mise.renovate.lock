@@ -33,7 +33,7 @@ url = "https://nodejs.org/dist/v26.13.1/node-v26.13.1-win-x64.zip"
 
 [[tools."npm:renovate"]]
 version = "44.242.0"
-aube = { path = ".mise/locks/mise.renovate/npm-renovate/44.242.0~026f02c4", digest = "sha256:0935d25d15b44769f30f31657ad803730071869cd157529239b753619112711c" }
+aube = { path = ".mise/locks/mise.renovate/npm-renovate/44.242.0~026f02c4", digest = "sha256:6128b796fbfe1ead978be384140bd13aab717f6634a715fa46e7a909ad8a4551" }
 backend = "npm:renovate"
 specifiers = ["44.242.0"]
 
