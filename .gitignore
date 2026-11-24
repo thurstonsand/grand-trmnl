@@ -4,6 +4,7 @@ plugins/*/references/
 
 # build artifacts
 _build
+/.bundle/
 
 # subagent working files
 .agents/scratch/

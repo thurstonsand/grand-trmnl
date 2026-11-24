@@ -14,8 +14,7 @@ ruby.compile = false
 "brew-cask:firefox" = { version = "latest", os = "macos/arm64" }
 
 [hooks]
-# Entering the repo reconciles everything: running a task hydrates every tool in
-# [tools], even when the task body is cached, and bootstrap installs the git hooks.
+# Bootstrap installs the locked gems and git hooks after mise installs the tools.
 enter = "mise bootstrap --yes --quiet"
 
 [tools]
@@ -23,15 +22,21 @@ enter = "mise bootstrap --yes --quiet"
 ruby = "4.0.10"
 node = "26.13.1"
 hk = "2.13.0"
-"gem:trmnl_preview" = "0.20.0"
 "npm:markdownlint-cli2" = "0.24.2"
 
 [env]
-GEMRC = "{{config_root}}/.gemrc"
+BUNDLE_FROZEN = "true"
+BUNDLE_PATH = "{{config_root}}/.bundle/gems"
 HK_MISE = "1"
+
+[tasks."bundle:install"]
+description = "Install the locked Ruby gems"
+run = "bundle check || bundle install"
+quiet = true
 
 [tasks.bootstrap]
 description = "Install git hooks"
+depends = ["bundle:install"]
 run = "hk install --mise --quiet"
 sources = ["mise.toml", "hk.pkl"]
 outputs = { auto = true }
@@ -56,8 +61,9 @@ run = "MISE_ENV=renovate mise x -- renovate-config-validator renovate.json"
 
 [tasks.test]
 description = "Run tests"
-run = "bash plugins/parcel/test/date_calculation_test.sh"
+depends = ["bundle:install"]
+run = "bundle exec ruby plugins/parcel/test/date_calculation_test.rb"
 
 [tasks.renovate]
 description = "Run Renovate"
-run = "MISE_ENV=renovate mise x -- renovate"
+run = "MISE_ENV=renovate mise x -- env -u BUNDLE_FROZEN -u BUNDLE_PATH renovate"

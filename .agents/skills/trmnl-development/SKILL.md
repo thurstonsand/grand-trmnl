@@ -53,15 +53,15 @@ Typical loop:
 Useful commands:
 
 ```bash
-trmnlp init my_plugin
-trmnlp serve -d plugins/my_plugin
-trmnlp build -d plugins/my_plugin --png
-trmnlp lint -d plugins/my_plugin
-trmnlp login
-trmnlp list
-trmnlp clone name id
-trmnlp pull -d plugins/my_plugin
-trmnlp push -d plugins/my_plugin
+mise x -- bundle exec trmnlp init my_plugin
+mise x -- bundle exec trmnlp serve -d plugins/my_plugin
+mise x -- bundle exec trmnlp build -d plugins/my_plugin --png
+mise x -- bundle exec trmnlp lint -d plugins/my_plugin
+mise x -- bundle exec trmnlp login
+mise x -- bundle exec trmnlp list
+mise x -- bundle exec trmnlp clone name id
+mise x -- bundle exec trmnlp pull -d plugins/my_plugin
+mise x -- bundle exec trmnlp push -d plugins/my_plugin
 ```
 
 Important behavior:

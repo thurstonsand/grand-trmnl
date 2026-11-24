@@ -12,7 +12,7 @@ Shared at the root: mise owns the whole environment (`mise.toml` — Debian/macO
 
 - `mise run dev [plugin]` — local preview (defaults to `parcel`)
 - `mise run lint` — markdownlint across the repo; also runs as a pre-commit gate
-- `trmnlp push -d plugins/<name>` — deploy one plugin (only with explicit approval; `settings.yml` must keep its `id:`)
+- `mise x -- bundle exec trmnlp push -d plugins/<name>` — deploy one plugin (only with explicit approval; `settings.yml` must keep its `id:`)
 - Judge every layout change from device-accurate PNG renders, never the HTML preview alone; each plugin's DEV.md carries the render recipes.
 
 ## Plugins

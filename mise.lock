@@ -2,11 +2,6 @@
 
 lockfile_version = 4
 
-[[tools."gem:trmnl_preview"]]
-version = "0.20.0"
-backend = "gem:trmnl_preview"
-specifiers = ["0.20.0"]
-
 [[tools.hk]]
 version = "2.13.0"
 backend = "packslip:github.com/jdx/hk"

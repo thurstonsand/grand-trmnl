@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 #MISE description="Start local JSON server and trmnlp preview for a plugin"
+#MISE depends=["bundle:install"]
 #USAGE arg "[plugin]" help="Plugin directory name under plugins/" default="parcel"
 
 set -euo pipefail
@@ -26,11 +27,11 @@ cleanup() {
 trap cleanup EXIT INT TERM
 
 STATIC_ROOT="$PLUGIN_DIR/references" \
-  rackup -r rack/files -s puma -o 127.0.0.1 -p 8888 \
+  bundle exec rackup -r rack/files -s puma -o 127.0.0.1 -p 8888 \
   -b 'run Rack::Files.new(ENV.fetch("STATIC_ROOT"))' &
 JSON_PID=$!
 
-trmnlp serve -d "$PLUGIN_DIR" &
+bundle exec trmnlp serve -d "$PLUGIN_DIR" &
 TRMNLP_PID=$!
 
 echo "JSON server: http://localhost:8888"

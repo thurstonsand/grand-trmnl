@@ -61,7 +61,7 @@ Scenario datasets live in `references/scenarios/` (gitignored, regenerable): `ge
 
 ## Device-Accurate PNG Renders
 
-The trmnlp render route accepts device parameters directly — the whole device matrix is curl-able. Device classes, dimensions, and scale factors come from `https://trmnl.com/api/models`; trmnlp 0.20 renders at the model's physical pixel dimensions and applies the Framework's logical sizing internally.
+The trmnlp render route accepts device parameters directly — the whole device matrix is curl-able. Device classes, dimensions, and scale factors come from `https://trmnl.com/api/models`; trmnlp renders at the model's physical pixel dimensions and applies the Framework's logical sizing internally.
 
 | Target | screen_classes | dims (physical) | depth |
 | --- | --- | --- | --- |
@@ -81,8 +81,8 @@ Swap `full` for any view name. Always judge layouts from PNG renders, not the HT
 ## Deploying
 
 ```sh
-trmnlp login                    # one-time auth
-trmnlp push -d plugins/parcel   # from repo root (--force to skip confirmation)
+mise x -- bundle exec trmnlp login                    # one-time auth
+mise x -- bundle exec trmnlp push -d plugins/parcel   # from repo root (--force to skip confirmation)
 ```
 
 `src/settings.yml` must keep its `id:` — without it, push creates a new plugin instead of updating.
@@ -131,12 +131,12 @@ ReCollect (`IDX_1`, see `docs/designs/03-bin-reminder.md`):
 
 ## Gotchas
 
-- **`trmnlp lint` is a useful static check, but render-based verification remains the real gate.**
+- **`mise x -- bundle exec trmnlp lint -d plugins/parcel` is a useful static check, but render-based verification remains the real gate.**
 - **Lists use Framework 3.2's official `.columns > .column` overflow contract.** Fixed responsive column counts avoid the browser-sensitive best-fit optimizer; the runtime chooses visible rows from the available height and adds an honest "and N more" counter. Because trmnlp renders with Firefox while production uses Chromium, validate overflow behavior on real devices after publishing.
 - **Overflow budgets come from the `.columns` parent's bottom edge.** A list inside a content-sized wrapper measures its own height, so it can never truncate for lack of space, only drop rows to sub-pixel rounding. Give each region one list in a height-bounded parent and put every row (Today, Bin Reminder, Delivered, Upcoming) in it, rather than nesting lists inside `hero_slot`. In portrait, `full` and `half_horizontal` swap their two regions for one list under the hero (`landscape:hidden`), built from the same captured rows; `h--min-0` keeps that region bounded, and the "N upcoming" label is a `data-group-header` so the engine hides it when no upcoming row fits. Within a ~25px band the engine can still show that header alone above "And N more"; the count stays honest.
 - **Active titles wrap; delivered titles clamp to one line.** Overflow accounts for each row's rendered height.
 - **Polling headers go to every polling URL**, so ReCollect also receives the Parcel `api-key` header. It ignores it.
-- **trmnlp 0.20's render route takes TRMNL X's physical resolution** (1872×1404 landscape) while Framework classes retain its 1040×780 logical geometry and 1.8 pixel ratio.
+- **The render route takes TRMNL X's physical resolution** (1872×1404 landscape) while Framework classes retain its 1040×780 logical geometry and 1.8 pixel ratio.
 
 ## TRMNL-Specific Best Practices
 

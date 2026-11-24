@@ -29,15 +29,15 @@ Done when you hold the full list of open Renovate PRs.
 
 ### 2. Land the batch
 
-Start from a current `main` and for each open Renovate PR, read its diff and make the same edit yourself directly on `main`. Here that usually means version bumps in `mise.toml` followed by `mise install`. When a linter bump in the batch turns the local gate red, run the linter and fold its mechanical output into the same commit, so the bump and its fallout land together. Commit all changes across all PRs at once.
+Start from a current `main` and for each open Renovate PR, read its diff and make the same edit yourself directly on `main`. For Ruby gem bumps, update `Gemfile` and regenerate `Gemfile.lock` using the command in the root README. When a linter bump in the batch turns the local gate red, run the linter and fold its mechanical output into the same commit, so the bump and its fallout land together. Commit all changes across all PRs at once.
 
 Done when every open update is authored into one commit on `main` and pushed.
 
 ### 3. Verify
 
-There is no CI in this repo, so verify locally. Always: `mise install` succeeds and `mise run lint` is clean. When the batch touches `gem:trmnl_preview`, also confirm the render pipeline still works — `mise run dev` and a device-accurate render per `plugins/*/DEV.md` — since trmnlp owns the screenshot path and its behavior has shifted between releases.
+There is no CI in this repo. Run `mise bootstrap --yes`, `mise run lint`, and `mise run test`. When `Gemfile.lock` changes, verify the render pipeline with `mise run dev` and a device-accurate render per the plugin's DEV.md.
 
-A trmnlp bump is also the moment to re-read the documented gotchas in `.agents/skills/trmnl-development/SKILL.md` (missing `lint` command, Firefox-vs-Chromium engine divergence, `/poll` caching). If a release fixes one, update the doc in the same commit.
+On a trmnlp bump, check the renderer caveats in the `trmnl-development` skill. Update any caveat the new release changes.
 
 Done when the local gates pass. Fix a failure before reconciling.
 
