@@ -25,7 +25,7 @@ fi
 
 if [[ ! -x "$mise_bin" ]]; then
   echo "==> Install mise"
-  curl -fsSL https://mise.run | MISE_INSTALL_PATH="$mise_bin" sh
+  curl -fsSL https://mise.run | MISE_INSTALL_PATH="$mise_bin" MISE_SELF_UPDATE_MINIMUM_RELEASE_AGE=3d sh
 else
   echo "==> mise already installed"
 fi
