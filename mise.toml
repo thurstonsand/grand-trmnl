@@ -21,7 +21,7 @@ enter = "mise bootstrap --yes --quiet"
 # trmnl_preview depends on trmnl-liquid, which requires Ruby >= 4.0
 ruby = "4.0.10"
 node = "26.13.1"
-hk = "2.13.0"
+hk = "2.14.0"
 "npm:markdownlint-cli2" = "0.24.2"
 
 [env]
